@@ -2,6 +2,8 @@
 
 class ApplicationController < ActionController::API
   before_action :require_login
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+  rescue_from ApplicationError::UnauthorizedError, with: :not_autherized
 
   protected
 
@@ -19,6 +21,10 @@ class ApplicationController < ActionController::API
 
   def not_authenticated
     head :unauthorized
+  end
+
+  def not_autherized
+    head :forbidden
   end
 
   def not_found

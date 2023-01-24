@@ -10,4 +10,7 @@ class User < ApplicationRecord
   validates :password, confirmation: true,
                        format: { with: VALID_PASSWORD_REGEX, message: :invalid_password }
   validates :password_confirmation, presence: true
+  validates :point, presence: true
+
+  has_many :products, dependent: :restrict_with_exception
 end

@@ -8,4 +8,9 @@ Rails.application.routes.draw do
 
   resource :users, only: %i[create]
   resource :session, only: %i[create show destroy]
+  resources :products, only: %i[index create show update destroy] do
+    member do
+      post 'purchase'
+    end
+  end
 end
