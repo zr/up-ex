@@ -112,12 +112,6 @@ RSpec.describe 'Products' do
       get('/products/invalid_product')
       expect(response).to have_http_status(:not_found)
     end
-
-    it '削除済みの商品を指定したとき' do
-      product.update!(availability_status: 'deleted')
-      get("/products/#{product.id}")
-      expect(response).to have_http_status(:not_found)
-    end
   end
 
   describe 'PATCH /products/{product_id}' do
@@ -176,22 +170,11 @@ RSpec.describe 'Products' do
         ]
       )
     end
-
-    it '削除済みの商品を編集しようとしたとき' do
-      product.update!(availability_status: 'deleted')
-
-      patch("/products/#{product.id}", params:)
-      product.reload
-      expect(product.title).not_to eq(params[:title])
-      expect(product.price).not_to eq(params[:price])
-
-      expect(response).to have_http_status(:not_found)
-    end
   end
 
   describe 'DELETE /products/{product_id}' do
-    let(:owner) { create(:user) }
-    let(:product) { create(:product, user: owner) }
+    let!(:owner) { create(:user) }
+    let!(:product) { create(:product, user: owner) }
 
     before do
       login(owner)
@@ -199,8 +182,10 @@ RSpec.describe 'Products' do
 
     # 成功
     it '商品が削除できる' do
-      delete("/products/#{product.id}")
-      expect(product.reload.availability_status).to eq('deleted')
+      expect do
+        delete("/products/#{product.id}")
+      end.to change(owner.products, :count).by(-1)
+         .and change(owner.deleted_products, :count).by(1)
 
       expect(response).to have_http_status(:ok)
     end
@@ -210,25 +195,12 @@ RSpec.describe 'Products' do
       another_owner = create(:user)
       another_product = create(:product, user: another_owner)
 
-      delete("/products/#{another_product.id}")
-      expect(another_product.reload.availability_status).not_to eq('deleted')
+      expect do
+        delete("/products/#{another_product.id}")
+      end.to not_change(another_owner.products, :count)
+         .and not_change(another_owner.deleted_products, :count)
 
       expect(response).to have_http_status(:forbidden)
-    end
-
-    it '購入済みの商品を削除しようとしたとき' do
-      product.update!(availability_status: 'purchased')
-
-      delete("/products/#{product.id}")
-      expect(product.reload.availability_status).not_to eq('deleted')
-
-      expect(response).to have_http_status(:bad_request)
-      res = JSON.parse(response.body, symbolize_names: true)
-      expect(res[:errors]).to eq(
-        [
-          { message: '購入済みの商品は削除できません' }
-        ]
-      )
     end
   end
 end

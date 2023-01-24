@@ -60,8 +60,8 @@ class ProductsController < ApplicationController
   end
 
   def load_product
-    @product = Product.find_by(params[:product_id])
-    raise ActiveRecord::RecordNotFound if @product.nil? || @product.deleted?
+    @product = Product.find_by(id: params[:id])
+    raise ActiveRecord::RecordNotFound if @product.nil?
   end
 
   def valid_owner

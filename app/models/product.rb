@@ -9,8 +9,7 @@ class Product < ApplicationRecord
 
   belongs_to :user
 
-  enumerize :availability_status, in: %i[available purchased deleted],
-                                  default: :available, predicates: true
+  enumerize :availability_status, in: %i[available purchased], default: :available, predicates: true
 
   private
 

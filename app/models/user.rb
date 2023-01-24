@@ -13,4 +13,5 @@ class User < ApplicationRecord
   validates :point, presence: true
 
   has_many :products, dependent: :restrict_with_exception
+  has_many :deleted_products, dependent: :restrict_with_exception
 end

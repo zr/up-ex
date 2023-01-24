@@ -7,7 +7,17 @@ module Products
     validate :valid_status
 
     def execute
-      product.update!(availability_status: 'deleted')
+      ActiveRecord::Base.transaction do
+        deleted_product = DeletedProduct.new(
+          title: product.title,
+          price: product.price,
+          user: product.user
+        )
+
+        errors.merge!(deleted_product.errors) unless deleted_product.save
+
+        product.destroy!
+      end
     end
 
     private
