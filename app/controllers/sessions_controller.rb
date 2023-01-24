@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
 
   def show
     user = current_user
-    render json: user, only: %i[id email point]
+    render json: user, serializer: UserPrivateSerializer
   end
 
   def create

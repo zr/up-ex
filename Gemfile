@@ -39,6 +39,7 @@ gem 'bootsnap', require: false
 # gem "rack-cors"
 
 gem 'active_interaction', '~> 5.2'
+gem 'active_model_serializers'
 gem 'dotenv-rails'
 gem 'enumerize'
 gem 'sorcery'

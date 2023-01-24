@@ -8,7 +8,7 @@ class UsersController < ApplicationController
     if user.valid?
       user.point += 10_000
       user.save!
-      render json: user, only: %i[id email point]
+      render json: user, serializer: UserPrivateSerializer
     else
       render_validation_errors(user)
     end

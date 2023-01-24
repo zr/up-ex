@@ -5,7 +5,7 @@ class ProductsController < ApplicationController
 
   def show
     load_product
-    render json: @product, only: %i[id title price availability_status]
+    render json: @product, serializer: ProductSerializer
   end
 
   def create
@@ -13,7 +13,7 @@ class ProductsController < ApplicationController
     product = Product.new(input)
     if product.valid?
       product.save!
-      render json: product, only: %i[id title price availability_status]
+      render json: product, serializer: ProductSerializer
     else
       render_validation_errors(product)
     end
@@ -26,7 +26,7 @@ class ProductsController < ApplicationController
     product_update = ::Products::Update.run(input)
     if product_update.valid?
       product = product_update.result
-      render json: product, only: %i[id title price availability_status]
+      render json: product, serializer: ProductSerializer
     else
       render_validation_errors(product_update)
     end
