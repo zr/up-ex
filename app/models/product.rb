@@ -2,6 +2,7 @@
 
 class Product < ApplicationRecord
   extend Enumerize
+  include ProductSearchable
 
   validates :title, presence: true
   validates :price, presence: true

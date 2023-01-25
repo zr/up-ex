@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'Products' do
   describe 'POST /products' do
-    let(:owner) { create(:user) }
-    let(:params) { { title: 'タイトル', price: 10 } }
+    let!(:owner) { create(:user) }
+    let!(:params) { { title: 'タイトル', price: 10 } }
 
     before do
       login(owner)
@@ -89,8 +89,8 @@ RSpec.describe 'Products' do
   end
 
   describe 'GET /products/{product_id}' do
-    let(:owner) { create(:user) }
-    let(:product) { create(:product, user: owner) }
+    let!(:owner) { create(:user) }
+    let!(:product) { create(:product, user: owner) }
 
     # 成功
     it '商品の情報が取得できる' do
@@ -115,9 +115,9 @@ RSpec.describe 'Products' do
   end
 
   describe 'PATCH /products/{product_id}' do
-    let(:owner) { create(:user) }
-    let(:product) { create(:product, user: owner) }
-    let(:params) { { title: 'edited', price: 50 } }
+    let!(:owner) { create(:user) }
+    let!(:product) { create(:product, user: owner) }
+    let!(:params) { { title: 'edited', price: 50 } }
 
     before do
       login(owner)
@@ -201,6 +201,58 @@ RSpec.describe 'Products' do
          .and not_change(another_owner.deleted_products, :count)
 
       expect(response).to have_http_status(:forbidden)
+    end
+  end
+
+  describe 'GET /products', elasticsearch: true do
+    let!(:owner) { create(:user) }
+    let!(:product) { create(:product, user: owner) }
+
+    before do
+      Product.import(refresh: true)
+    end
+
+    # 成功
+    it '取得できる' do
+      get('/products')
+      expect(response).to have_http_status(:ok)
+      res = JSON.parse(response.body, symbolize_names: true)
+      expect(res).to eq({
+                          products: [
+                            {
+                              id: product.id,
+                              title: product.title,
+                              price: product.price,
+                              availability_status: product.availability_status
+                            }
+                          ],
+                          meta: {
+                            total_hits: 1
+                          }
+                        })
+    end
+
+    # 失敗
+    where(:invalid_per_page) do
+      [
+        0,
+        101
+      ]
+    end
+
+    with_them do
+      it 'ページ表示数が不正な値のとき' do
+        get('/products', params: { per: invalid_per_page })
+        expect(response).to have_http_status(:bad_request)
+        res = JSON.parse(response.body, symbolize_names: true)
+        expect(res[:errors]).to eq(
+          [
+            {
+              message: '適切なページ表示数を入れてください'
+            }
+          ]
+        )
+      end
     end
   end
 end

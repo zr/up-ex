@@ -1,7 +1,19 @@
 # frozen_string_literal: true
 
 class ProductsController < ApplicationController
-  skip_before_action :require_login, only: %i[show]
+  skip_before_action :require_login, only: %i[index show]
+
+  def index
+    product_index = ::Products::Index.run(index_params)
+    if product_index.valid?
+      search_result = product_index.result
+      render json: search_result[:products], each_serializer: ProductSerializer,
+             meta: { total_hits: search_result[:total_hits] },
+             adapter: :json
+    else
+      render_validation_errors(product_index)
+    end
+  end
 
   def show
     load_product
@@ -44,6 +56,15 @@ class ProductsController < ApplicationController
   end
 
   private
+
+  def index_params
+    params.permit(
+      :search_term,
+      :only_available,
+      :page,
+      :per
+    )
+  end
 
   def create_params
     params.permit(

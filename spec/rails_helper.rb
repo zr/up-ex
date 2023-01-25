@@ -65,6 +65,10 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include Sorcery::TestHelpers::Rails::Request, type: :request
+
+  config.before do |example|
+    Product.create_index! if example.metadata[:elasticsearch]
+  end
 end
 
 RSpec::Matchers.define_negated_matcher :not_change, :change
