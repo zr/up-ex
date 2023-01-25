@@ -55,6 +55,18 @@ class ProductsController < ApplicationController
     end
   end
 
+  def purchase
+    load_product
+    input = { user: current_user, product: @product }.merge(purchase_params)
+    product_purchase = ::Products::Purchase.run(input)
+    if product_purchase.valid?
+      product = product_purchase.result
+      render json: product, serializer: ProductSerializer
+    else
+      render_validation_errors(product_purchase)
+    end
+  end
+
   private
 
   def index_params
@@ -76,6 +88,12 @@ class ProductsController < ApplicationController
   def update_params
     params.permit(
       :title,
+      :price
+    )
+  end
+
+  def purchase_params
+    params.permit(
       :price
     )
   end

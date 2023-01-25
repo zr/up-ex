@@ -255,4 +255,73 @@ RSpec.describe 'Products' do
       end
     end
   end
+
+  describe 'POST /products/purchase' do
+    let!(:owner) { create(:user) }
+    let!(:product) { create(:product, user: owner) }
+    let!(:user) { create(:user) }
+    let!(:params) { { price: product.price } }
+
+    # 成功
+    it '商品が購入できる' do
+      login(user)
+      expect do
+        post("/products/#{product.id}/purchase", params:)
+      end.to change(Order, :count).by(1)
+      expect(response).to have_http_status(:ok)
+      res = JSON.parse(response.body, symbolize_names: true)
+      expect(res).to eq({
+                          id: product.id,
+                          price: product.price,
+                          title: product.title,
+                          availability_status: 'purchased'
+                        })
+    end
+
+    # 失敗
+    it 'すでに購入されているとき' do
+      product.update!(availability_status: 'purchased')
+
+      login(user)
+      expect do
+        post("/products/#{product.id}/purchase", params:)
+      end.not_to change(Order, :count)
+      expect(response).to have_http_status(:bad_request)
+      res = JSON.parse(response.body, symbolize_names: true)
+      expect(res[:errors]).to eq(
+        [
+          { message: '購入ができない商品です' }
+        ]
+      )
+    end
+
+    it '自分の商品のとき' do
+      login(owner)
+      expect do
+        post("/products/#{product.id}/purchase", params:)
+      end.not_to change(Order, :count)
+      expect(response).to have_http_status(:bad_request)
+      res = JSON.parse(response.body, symbolize_names: true)
+      expect(res[:errors]).to eq(
+        [
+          { message: '購入ができない商品です' }
+        ]
+      )
+    end
+
+    it '閲覧した価格と違ったとき' do
+      login(user)
+      params[:price] = product.price + 10
+      expect do
+        post("/products/#{product.id}/purchase", params:)
+      end.not_to change(Order, :count)
+      expect(response).to have_http_status(:bad_request)
+      res = JSON.parse(response.body, symbolize_names: true)
+      expect(res[:errors]).to eq(
+        [
+          { message: '価格が更新されました、最新の価格を確認してください' }
+        ]
+      )
+    end
+  end
 end

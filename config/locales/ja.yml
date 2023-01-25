@@ -103,6 +103,8 @@ ja:
       invalid_price: は1ポイント以上・1,000,000以下で入れてください
       cannot_update_if_purchased: 購入済みの商品は編集できません
       invalid_search_size: 適切なページ表示数を入れてください
+      unpurchasable_product: 購入ができない商品です
+      invalid_asked_price: 価格が更新されました、最新の価格を確認してください
       accepted: を受諾してください
       blank: を入力してください
       confirmation: と%{attribute}の入力が一致しません
