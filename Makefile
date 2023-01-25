@@ -1,11 +1,18 @@
+DOCKER_COMPOSE := docker-compose
+DOCKER_COMPOSE_RUN := docker-compose run --rm
+
 .PHONY: rspec
 rspec:
-	docker-compose run --rm web bundle exec rspec
+	${DOCKER_COMPOSE_RUN} web bundle exec rspec
 
 .PHONY: lint
 lint:
-	docker-compose run --rm web bundle exec rubocop -A
+	${DOCKER_COMPOSE_RUN} web bundle exec rubocop -A
 
 .PHONY: migrate
 migrate:
-	docker-compose run --rm web rails db:migrate
+	${DOCKER_COMPOSE_RUN} web rails db:migrate
+
+.PHONY: bundle_install
+bundle_install:
+	${DOCKER_COMPOSE_RUN} web bundle install
