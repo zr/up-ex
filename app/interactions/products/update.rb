@@ -9,6 +9,8 @@ module Products
     validate :valid_status
 
     def execute
+      product.lock!
+
       product.title = title if title.present?
       product.price = price if price.present?
 

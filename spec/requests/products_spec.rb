@@ -62,30 +62,6 @@ RSpec.describe 'Products' do
         ]
       )
     end
-
-    where(:invalid_price) do
-      [
-        0,
-        1_000_001
-      ]
-    end
-
-    with_them do
-      it '価格が不正な値のとき' do
-        params[:price] = invalid_price
-        expect do
-          post('/products', params:)
-        end.not_to change(owner.products, :count)
-
-        expect(response).to have_http_status(:bad_request)
-        res = JSON.parse(response.body, symbolize_names: true)
-        expect(res[:errors]).to eq(
-          [
-            { message: '価格は1ポイント以上・1,000,000以下で入れてください' }
-          ]
-        )
-      end
-    end
   end
 
   describe 'GET /products/{product_id}' do

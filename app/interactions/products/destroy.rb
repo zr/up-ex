@@ -8,6 +8,8 @@ module Products
 
     def execute
       ActiveRecord::Base.transaction do
+        product.lock!
+
         deleted_product = DeletedProduct.new(
           title: product.title,
           price: product.price,

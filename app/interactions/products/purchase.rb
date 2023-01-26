@@ -12,6 +12,7 @@ module Products
 
     def execute
       ActiveRecord::Base.transaction do
+        product.lock!
         product.update!(availability_status: 'purchased')
 
         Order.create!(
