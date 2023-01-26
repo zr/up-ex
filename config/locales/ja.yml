@@ -105,6 +105,7 @@ ja:
       invalid_search_size: 適切なページ表示数を入れてください
       unpurchasable_product: 購入ができない商品です
       invalid_asked_price: 価格が更新されました、最新の価格を確認してください
+      not_enough_point: 購入に必要なポイントが足りません
       accepted: を受諾してください
       blank: を入力してください
       confirmation: と%{attribute}の入力が一致しません

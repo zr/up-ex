@@ -9,6 +9,7 @@ class Product < ApplicationRecord
   validate :valid_price
 
   belongs_to :user
+  has_one :order, dependent: :restrict_with_exception
 
   enumerize :availability_status, in: %i[available purchased], default: :available, predicates: true
 

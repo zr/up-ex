@@ -8,18 +8,21 @@ module Products
 
     validate :not_owner
     validate :available_product
-    validate :valid_price
+    validate :valid_asked_price
+    validate :not_enough_point
 
     def execute
       ActiveRecord::Base.transaction do
         product.lock!
         product.update!(availability_status: 'purchased')
 
-        Order.create!(
-          product_id: product.id,
-          buyer_id: user.id,
-          seller_id: product.user_id
+        user.point -= product.price
+        user.save!
+
+        order = product.build_order(
+          user:
         )
+        order.save!
 
         product
       end
@@ -35,8 +38,12 @@ module Products
       errors.add(:base, :unpurchasable_product) unless product.available?
     end
 
-    def valid_price
+    def valid_asked_price
       errors.add(:base, :invalid_asked_price) unless price == product.price
+    end
+
+    def not_enough_point
+      errors.add(:base, :not_enough_point) if (user.point - product.price).negative?
     end
   end
 end

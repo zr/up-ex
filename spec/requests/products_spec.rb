@@ -299,5 +299,20 @@ RSpec.describe 'Products' do
         ]
       )
     end
+
+    it '購入に必要なポイントが足りていないとき' do
+      login(user)
+      user.update!(point: 0)
+      expect do
+        post("/products/#{product.id}/purchase", params:)
+      end.not_to change(Order, :count)
+      expect(response).to have_http_status(:bad_request)
+      res = JSON.parse(response.body, symbolize_names: true)
+      expect(res[:errors]).to eq(
+        [
+          { message: '購入に必要なポイントが足りません' }
+        ]
+      )
+    end
   end
 end
