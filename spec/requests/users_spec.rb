@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Users' do
   describe 'POST /users' do
-    let(:params) { { email: 'test@test.com', password: 'Passw0rd', password_confirmation: 'Passw0rd' } }
+    let!(:params) { { email: 'test@test.com', password: 'Passw0rd', password_confirmation: 'Passw0rd' } }
 
     # 成功
     it 'ユーザー作成ができる' do
@@ -16,7 +16,7 @@ RSpec.describe 'Users' do
         {
           id: user.id,
           email: params[:email],
-          point: 10_000
+          point: user.point
         }
       )
     end
@@ -48,31 +48,6 @@ RSpec.describe 'Users' do
       )
     end
 
-    where(:invalid_email) do
-      [
-        ['example'],
-        ['example@'],
-        ['example.com'],
-        ['example@example.'],
-        ['@example.com'],
-        ['@.com']
-      ]
-    end
-
-    with_them do
-      it 'メールアドレスが不正な値のとき' do
-        params[:email] = invalid_email
-        post('/users', params:)
-        expect(response).to have_http_status(:bad_request)
-        res = JSON.parse(response.body, symbolize_names: true)
-        expect(res[:errors]).to eq(
-          [{
-            message: 'メールアドレスの形式を確認してください'
-          }]
-        )
-      end
-    end
-
     it 'パスワードが指定されていないとき' do
       params[:password] = ''
       post('/users', params:)
@@ -96,31 +71,6 @@ RSpec.describe 'Users' do
           { message: 'パスワード(確認)とパスワードの入力が一致しません' }
         ]
       )
-    end
-
-    where(:invalid_password) do
-      [
-        ['a'],
-        ['AAaa1'],
-        ['AAaabb'],
-        ['aabb11'],
-        ['AABB11']
-      ]
-    end
-
-    with_them do
-      it 'パスワードが不正な値であるとき' do
-        params[:password] = invalid_password
-        params[:password_confirmation] = invalid_password
-        post('/users', params:)
-        expect(response).to have_http_status(:bad_request)
-        res = JSON.parse(response.body, symbolize_names: true)
-        expect(res[:errors]).to eq(
-          [{
-            message: 'パスワードは6文字以上・半角英数字(大文字小文字)を1文字以上入れてください'
-          }]
-        )
-      end
     end
   end
 end

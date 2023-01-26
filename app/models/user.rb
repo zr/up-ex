@@ -10,8 +10,12 @@ class User < ApplicationRecord
   validates :password, confirmation: true,
                        format: { with: VALID_PASSWORD_REGEX, message: :invalid_password }
   validates :password_confirmation, presence: true
-  validates :point, presence: true
+  validates :point, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   has_many :products, dependent: :restrict_with_exception
   has_many :deleted_products, dependent: :restrict_with_exception
+
+  before_create do
+    self.point = 10_000
+  end
 end

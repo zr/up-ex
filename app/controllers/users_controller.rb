@@ -6,7 +6,6 @@ class UsersController < ApplicationController
   def create
     user = User.new(create_params)
     if user.valid?
-      user.point += 10_000
       user.save!
       render json: user, serializer: UserPrivateSerializer
     else
