@@ -41,11 +41,12 @@ gem 'bootsnap', require: false
 gem 'active_interaction', '~> 5.2'
 gem 'active_model_serializers'
 gem 'dotenv-rails'
-gem 'will_paginate'
+gem 'will_paginate' # must be before elasticsearch gems
 gem 'elasticsearch-model'
 gem 'elasticsearch-rails'
 gem 'enumerize'
 gem 'sorcery'
+gem 'rack-cors'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

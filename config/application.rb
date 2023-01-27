@@ -32,6 +32,8 @@ module App
     config.middleware.use ActionDispatch::Session::CookieStore
     config.middleware.use ActionDispatch::ContentSecurityPolicy::Middleware
 
-    config.session_store :cookie_store
+    config.session_store :cookie_store, domain: ENV.fetch('APP_DOMAIN', 'localhost')
+
+    config.action_controller.forgery_protection_origin_check = false
   end
 end
