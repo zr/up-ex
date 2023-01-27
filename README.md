@@ -1,7 +1,4 @@
-# README
-
 ## Commands
----
 ```sh
 # setup
 $ make setup
