@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class ApplicationController < ActionController::API
+class ApplicationController < ActionController::Base
+  protect_from_forgery with: :exception
+  before_action :set_csrf_cookie
   before_action :require_login
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
   rescue_from ApplicationError::UnauthorizedError, with: :not_autherized
@@ -29,5 +31,9 @@ class ApplicationController < ActionController::API
 
   def not_found
     head :not_found
+  end
+
+  def set_csrf_cookie
+    cookies['CSRF-TOKEN'] = form_authenticity_token
   end
 end

@@ -30,6 +30,4 @@ class SessionsController < ApplicationController
       :password
     )
   end
-
-  def form_authenticity_token; end
 end
