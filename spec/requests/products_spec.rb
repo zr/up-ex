@@ -57,7 +57,6 @@ RSpec.describe 'Products' do
       res = JSON.parse(response.body, symbolize_names: true)
       expect(res[:errors]).to eq(
         [
-          { message: '価格を入力してください' },
           { message: '価格は1ポイント以上・1,000,000以下で入れてください' }
         ]
       )
