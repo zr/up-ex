@@ -7,6 +7,7 @@ setup:
 	@make bundle_install
 	@make db_create
 	@make db_migrate
+	@make es_index_create
 
 .PHONY: rspec
 rspec:
@@ -35,3 +36,7 @@ up:
 .PHONY: down
 down:
 	${DOCKER_COMPOSE} down
+
+.PHONY: es_index_create
+es_index_create:
+	${DOCKER_COMPOSE_RUN} web rails es_index:create
