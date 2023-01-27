@@ -1,24 +1,26 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Commands
+---
+```sh
+# setup
+$ make setup
 
-Things you may want to cover:
+# start server
+$ make up
 
-* Ruby version
+# stop server
+$ make down
 
-* System dependencies
+# run bundle install
+$ make bundle_install
 
-* Configuration
+# run db:migrate
+$ make db_migrate
 
-* Database creation
+# run Rubocop
+$ make lint
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+# run RSpec
+$ make rspec
+```
